@@ -65,11 +65,21 @@ public:
         CT_Bubble
     };
 
+    enum ChartStyle {
+        CS_Default = 0,
+        CS_Line
+    };
+
+    enum MarkerType {
+        MT_DEFAULT = 0,
+        MT_NONE
+    };
+
     ~Chart();
 
-    void addSeries(const CellRange &range, AbstractSheet *sheet=0);
+    void addSeries(const CellRange &range, AbstractSheet *sheet=0, MarkerType marker = MT_DEFAULT);
     void setChartType(ChartType type);
-    void setChartStyle(int id);
+    void setChartStyle(ChartStyle style);
 
     void saveToXmlFile(QIODevice *device) const;
     bool loadFromXmlFile(QIODevice *device);

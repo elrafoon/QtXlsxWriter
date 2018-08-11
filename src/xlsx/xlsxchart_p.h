@@ -53,6 +53,7 @@ public:
     //At present, we care about number cell ranges only!
     QString numberDataSource_numRef; //yval, val
     QString axDataSource_numRef; //xval, cat
+    Chart::MarkerType markerType;
 };
 
 class XlsxAxis
@@ -113,6 +114,7 @@ public:
     void saveXmlAxes(QXmlStreamWriter &writer) const;
 
     Chart::ChartType chartType;
+    Chart::ChartStyle chartStyle;
 
     QList<QSharedPointer<XlsxSeries> > seriesList;
     QList<QSharedPointer<XlsxAxis> > axisList;

@@ -93,7 +93,7 @@ Chart::~Chart()
 /*!
  * Add the data series which is in the range \a range of the \a sheet.
  */
-void Chart::addSeries(const CellRange &range, AbstractSheet *sheet)
+void Chart::addSeries(const CellRange &range, AbstractSheet *sheet, MarkerType marker)
 {
     Q_D(Chart);
     if (!range.isValid())
@@ -110,6 +110,7 @@ void Chart::addSeries(const CellRange &range, AbstractSheet *sheet)
     if (range.columnCount() == 1 || range.rowCount() == 1) {
         QSharedPointer<XlsxSeries> series = QSharedPointer<XlsxSeries>(new XlsxSeries);
         series->numberDataSource_numRef = sheetName + QLatin1String("!") + range.toString(true, true);
+        series->markerType = marker;
         d->seriesList.append(series);
     } else if (range.columnCount() < range.rowCount()) {
         //Column based series
@@ -126,6 +127,7 @@ void Chart::addSeries(const CellRange &range, AbstractSheet *sheet)
             QSharedPointer<XlsxSeries> series = QSharedPointer<XlsxSeries>(new XlsxSeries);
             series->axDataSource_numRef = axDataSouruce_numRef;
             series->numberDataSource_numRef = sheetName + QLatin1String("!") + subRange.toString(true, true);
+            series->markerType = marker;
             d->seriesList.append(series);
         }
 
@@ -144,6 +146,7 @@ void Chart::addSeries(const CellRange &range, AbstractSheet *sheet)
             QSharedPointer<XlsxSeries> series = QSharedPointer<XlsxSeries>(new XlsxSeries);
             series->axDataSource_numRef = axDataSouruce_numRef;
             series->numberDataSource_numRef = sheetName + QLatin1String("!") + subRange.toString(true, true);
+            series->markerType = marker;
             d->seriesList.append(series);
         }
     }
@@ -162,10 +165,10 @@ void Chart::setChartType(ChartType type)
  * \internal
  *
  */
-void Chart::setChartStyle(int id)
+void Chart::setChartStyle(ChartStyle style)
 {
-    Q_UNUSED(id)
-    //!Todo
+    Q_D(Chart);
+    d->chartStyle = style;
 }
 
 /*!
@@ -277,6 +280,15 @@ bool ChartPrivate::loadXmlXxxChart(QXmlStreamReader &reader)
                 loadXmlSer(reader);
             } else if (reader.name() == QLatin1String("axId")) {
 
+            } else if (reader.name() == QLatin1String("scatterStyle")) {
+                if(chartType == Chart::CT_Scatter) {
+                    if(reader.attributes().hasAttribute("val")) {
+                        QStringRef val = reader.attributes().value(QLatin1String("val"));
+                        if(val == "line")
+                            chartStyle = Chart::CS_Line;
+                        // TODO: add more styles
+                    }
+                }
             }
         } else if (reader.tokenType() == QXmlStreamReader::EndElement
                    && reader.name() == name) {
@@ -317,6 +329,18 @@ bool ChartPrivate::loadXmlSer(QXmlStreamReader &reader)
                 while (!reader.atEnd() && !(reader.tokenType() == QXmlStreamReader::EndElement
                                             && reader.name() == name)) {
                     reader.readNextStartElement();
+                }
+            } else if (name == QLatin1String("marker")) {
+                while (!reader.atEnd() && !(reader.tokenType() == QXmlStreamReader::EndElement
+                                            && reader.name() == name)) {
+                    if(reader.readNextStartElement()) {
+                        if(reader.name() == QLatin1String("symbol") && reader.attributes().hasAttribute("val")) {
+                            QStringRef val = reader.attributes().value("val");
+                            if(val == "none")
+                                series->markerType = Chart::MT_NONE;
+                            // TODO: add more types
+                        }
+                    }
                 }
             }
         }
@@ -458,7 +482,15 @@ void ChartPrivate::saveXmlScatterChart(QXmlStreamWriter &writer) const
 
     writer.writeStartElement(name);
 
-    writer.writeEmptyElement(QStringLiteral("c:scatterStyle"));
+    writer.writeStartElement(QStringLiteral("c:scatterStyle"));
+    switch(chartStyle) {
+        case Chart::CS_Line:
+            writer.writeAttribute(QStringLiteral("val"), "line");
+            break;
+        default:
+            break;
+    }
+    writer.writeEndElement();   // c:scatterStyle
 
     for (int i=0; i<seriesList.size(); ++i)
         saveXmlSer(writer, seriesList[i].data(), i);
@@ -551,6 +583,24 @@ void ChartPrivate::saveXmlSer(QXmlStreamWriter &writer, XlsxSeries *ser, int id)
         writer.writeTextElement(QStringLiteral("c:f"), ser->numberDataSource_numRef);
         writer.writeEndElement();//c:numRef
         writer.writeEndElement();//c:val or c:yVal
+    }
+
+    if (ser->markerType != Chart::MT_DEFAULT) {
+        writer.writeStartElement(QStringLiteral("c:marker"));
+        writer.writeStartElement(QStringLiteral("c:symbol"));
+        QString markerTypeName;
+        switch(ser->markerType) {
+            case Chart::MT_NONE:
+                markerTypeName = "none";
+                break;
+            default:
+                markerTypeName = "";
+                break;
+        }
+
+        writer.writeAttribute(QStringLiteral("val"), markerTypeName);
+        writer.writeEndElement(); // c:symbol
+        writer.writeEndElement(); // c:marker
     }
 
     writer.writeEndElement();//c:ser
