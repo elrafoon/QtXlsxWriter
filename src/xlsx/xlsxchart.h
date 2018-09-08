@@ -27,6 +27,7 @@
 #define QXLSX_CHART_H
 
 #include "xlsxabstractooxmlfile.h"
+#include "xlsxcolor_p.h"
 
 #include <QSharedPointer>
 
@@ -40,6 +41,34 @@ class Worksheet;
 class ChartPrivate;
 class CellRange;
 class DrawingAnchor;
+
+class Q_XLSX_EXPORT FillProperties {
+public:
+    enum FillStyle {
+        FS_Solid = 1
+    };
+
+    FillProperties(const XlsxColor &color = XlsxColor(), FillStyle style = FS_Solid);
+
+    XlsxColor color;
+    FillStyle fillStyle;
+};
+
+class Q_XLSX_EXPORT LineProperties {
+public:
+    LineProperties(const FillProperties &fill = FillProperties(), int width = 10000);
+
+    FillProperties fill;
+    int width;
+};
+
+class Q_XLSX_EXPORT ChartShapeProperties {
+public:
+    ChartShapeProperties(FillProperties area = FillProperties(), LineProperties line = LineProperties());
+
+    FillProperties area;
+    LineProperties line;
+};
 
 class Q_XLSX_EXPORT Chart : public AbstractOOXmlFile
 {
@@ -77,7 +106,8 @@ public:
 
     ~Chart();
 
-    void addSeries(const CellRange &range, AbstractSheet *sheet=0, MarkerType marker = MT_DEFAULT);
+    void addSeries(const CellRange &range, AbstractSheet *sheet=0, MarkerType marker = MT_DEFAULT,
+                   const ChartShapeProperties &spPr = ChartShapeProperties());
     void setChartType(ChartType type);
     void setChartStyle(ChartStyle style);
 

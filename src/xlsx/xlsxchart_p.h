@@ -54,6 +54,8 @@ public:
     QString numberDataSource_numRef; //yval, val
     QString axDataSource_numRef; //xval, cat
     Chart::MarkerType markerType;
+    ChartShapeProperties spPr;
+    bool spPrSet;
 };
 
 class XlsxAxis
@@ -111,6 +113,9 @@ public:
     void saveXmlAreaChart(QXmlStreamWriter &writer) const;
     void saveXmlDoughnutChart(QXmlStreamWriter &writer) const;
     void saveXmlSer(QXmlStreamWriter &writer, XlsxSeries *ser, int id) const;
+    void saveXmlShape(QXmlStreamWriter &writer, const ChartShapeProperties &csp) const;
+    void saveXmlFill(QXmlStreamWriter &writer, const FillProperties &fill) const;
+    void saveXmlLine(QXmlStreamWriter &writer, const LineProperties &line) const;
     void saveXmlAxes(QXmlStreamWriter &writer) const;
 
     Chart::ChartType chartType;
