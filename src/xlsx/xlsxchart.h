@@ -43,32 +43,32 @@ class ChartPrivate;
 class CellRange;
 class DrawingAnchor;
 
-class Q_XLSX_EXPORT FillProperties {
+class Q_XLSX_EXPORT ChartFill {
 public:
     enum FillStyle {
         FS_Solid = 1
     };
 
-    FillProperties(const XlsxColor &color = XlsxColor(), FillStyle style = FS_Solid);
+    ChartFill(const XlsxColor &color = XlsxColor(), FillStyle style = FS_Solid);
 
     XlsxColor color;
-    FillStyle fillStyle;
+    FillStyle style;
 };
 
-class Q_XLSX_EXPORT LineProperties {
+class Q_XLSX_EXPORT ChartLine {
 public:
-    LineProperties(const FillProperties &fill = FillProperties(), int width = 10000);
+    ChartLine(const ChartFill &fill = ChartFill(), int width = 10000);
 
-    FillProperties fill;
+    ChartFill fill;
     int width;
 };
 
-class Q_XLSX_EXPORT ChartShapeProperties {
+class Q_XLSX_EXPORT ChartShape {
 public:
-    ChartShapeProperties(FillProperties area = FillProperties(), LineProperties line = LineProperties());
+    ChartShape(ChartFill area = ChartFill(), ChartLine line = ChartLine());
 
-    FillProperties area;
-    LineProperties line;
+    ChartFill area;
+    ChartLine line;
 };
 
 class Q_XLSX_EXPORT XlsxAxis
@@ -143,7 +143,7 @@ public:
     ~Chart();
 
     void addSeries(const CellRange &range, AbstractSheet *sheet=0, MarkerType marker = MT_DEFAULT,
-                   const ChartShapeProperties &spPr = ChartShapeProperties());
+                   const ChartShape &spPr = ChartShape());
     void setChartType(ChartType type);
     void setChartStyle(ChartStyle style);
     // use only when overriding default axis

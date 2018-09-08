@@ -93,7 +93,7 @@ Chart::~Chart()
 /*!
  * Add the data series which is in the range \a range of the \a sheet.
  */
-void Chart::addSeries(const CellRange &range, AbstractSheet *sheet, MarkerType marker, const ChartShapeProperties &spPr)
+void Chart::addSeries(const CellRange &range, AbstractSheet *sheet, MarkerType marker, const ChartShape &spPr)
 {
     Q_D(Chart);
     if (!range.isValid())
@@ -621,16 +621,16 @@ void ChartPrivate::saveXmlSer(QXmlStreamWriter &writer, XlsxSeries *ser, int id)
     writer.writeEndElement();//c:ser
 }
 
-void ChartPrivate::saveXmlShape(QXmlStreamWriter &writer, const ChartShapeProperties &csp) const {
+void ChartPrivate::saveXmlShape(QXmlStreamWriter &writer, const ChartShape &csp) const {
     writer.writeStartElement(QStringLiteral("c:spPr"));
     saveXmlFill(writer, csp.area);
     saveXmlLine(writer, csp.line);
     writer.writeEndElement();
 }
 
-void ChartPrivate::saveXmlFill(QXmlStreamWriter &writer, const FillProperties &fill) const {
-    switch(fill.fillStyle) {
-        case FillProperties::FS_Solid:
+void ChartPrivate::saveXmlFill(QXmlStreamWriter &writer, const ChartFill &fill) const {
+    switch(fill.style) {
+        case ChartFill::FS_Solid:
         default:
             writer.writeStartElement(QStringLiteral("a:solidFill"));
             break;
@@ -643,7 +643,7 @@ void ChartPrivate::saveXmlFill(QXmlStreamWriter &writer, const FillProperties &f
     writer.writeEndElement();
 }
 
-void ChartPrivate::saveXmlLine(QXmlStreamWriter &writer, const LineProperties &line) const {
+void ChartPrivate::saveXmlLine(QXmlStreamWriter &writer, const ChartLine &line) const {
     writer.writeStartElement(QStringLiteral("a:ln"));
     writer.writeAttribute(QStringLiteral("w"), QString::number(line.width));
     saveXmlFill(writer, line.fill);
@@ -744,21 +744,21 @@ void ChartPrivate::saveXmlAxes(QXmlStreamWriter &writer) const
     }
 }
 
-FillProperties::FillProperties(const XlsxColor &color, FillStyle style) :
+ChartFill::ChartFill(const XlsxColor &color, FillStyle style) :
     color(color),
-    fillStyle(style)
+    style(style)
 {
 
 }
 
-LineProperties::LineProperties(const FillProperties &fill, int width) :
+ChartLine::ChartLine(const ChartFill &fill, int width) :
     fill(fill),
     width(width)
 {
 
 }
 
-ChartShapeProperties::ChartShapeProperties(FillProperties area, LineProperties line) :
+ChartShape::ChartShape(ChartFill area, ChartLine line) :
     area(area),
     line(line)
 {
