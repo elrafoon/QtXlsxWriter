@@ -52,6 +52,8 @@ public:
     ChartFill();
     ChartFill(const XlsxColor &color, FillStyle style = FS_Solid);
 
+    bool operator !=(const ChartFill &other) const;
+
     XlsxColor color;
     FillStyle style;
 };
@@ -61,6 +63,8 @@ public:
     ChartLine();
     ChartLine(const ChartFill &fill, int width = 10000);
 
+    bool operator !=(const ChartLine &other) const;
+
     ChartFill fill;
     int width;
 };
@@ -68,6 +72,8 @@ public:
 class Q_XLSX_EXPORT ChartShape {
 public:
     ChartShape(ChartFill area = ChartFill(), ChartLine line = ChartLine());
+
+    bool operator !=(const ChartShape &other) const;
 
     ChartFill area;
     ChartLine line;

@@ -612,7 +612,7 @@ void ChartPrivate::saveXmlSer(QXmlStreamWriter &writer, XlsxSeries *ser, int id)
         writer.writeEndElement(); // c:marker
     }
 
-    if(ser->shape)
+    if(ser->shape && *ser->shape != ChartShape())
         saveXmlShape(writer, *ser->shape);
 
     writer.writeEndElement();//c:ser
@@ -620,8 +620,10 @@ void ChartPrivate::saveXmlSer(QXmlStreamWriter &writer, XlsxSeries *ser, int id)
 
 void ChartPrivate::saveXmlShape(QXmlStreamWriter &writer, const ChartShape &shape) const {
     writer.writeStartElement(QStringLiteral("c:spPr"));
-    saveXmlFill(writer, shape.area);
-    saveXmlLine(writer, shape.line);
+    if(shape.area != ChartFill())
+        saveXmlFill(writer, shape.area);
+    if(shape.line != ChartLine())
+        saveXmlLine(writer, shape.line);
     writer.writeEndElement();
 }
 
@@ -643,7 +645,8 @@ void ChartPrivate::saveXmlFill(QXmlStreamWriter &writer, const ChartFill &fill) 
 void ChartPrivate::saveXmlLine(QXmlStreamWriter &writer, const ChartLine &line) const {
     writer.writeStartElement(QStringLiteral("a:ln"));
     writer.writeAttribute(QStringLiteral("w"), QString::number(line.width));
-    saveXmlFill(writer, line.fill);
+    if(line.fill != ChartFill())
+        saveXmlFill(writer, line.fill);
     writer.writeEndElement();
 }
 
@@ -754,6 +757,10 @@ ChartFill::ChartFill(const XlsxColor &color, FillStyle style) :
 
 }
 
+bool ChartFill::operator !=(const ChartFill &other) const {
+    return XlsxColor::toARGBString(color.rgbColor()) != XlsxColor::toARGBString(other.color.rgbColor()) || style != other.style;
+}
+
 ChartLine::ChartLine() :
     width(10000)
 {
@@ -767,11 +774,19 @@ ChartLine::ChartLine(const ChartFill &fill, int width) :
 
 }
 
+bool ChartLine::operator !=(const ChartLine &other) const {
+    return fill != other.fill || width != other.width;
+}
+
 ChartShape::ChartShape(ChartFill area, ChartLine line) :
     area(area),
     line(line)
 {
 
+}
+
+bool ChartShape::operator !=(const ChartShape &other) const {
+    return area != other.area || line != other.line;
 }
 
 QT_END_NAMESPACE_XLSX
