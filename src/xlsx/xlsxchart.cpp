@@ -93,7 +93,7 @@ Chart::~Chart()
 /*!
  * Add the data series which is in the range \a range of the \a sheet.
  */
-void Chart::addSeries(const CellRange &range, AbstractSheet *sheet, MarkerType marker, const ChartShape &spPr)
+void Chart::addSeries(const CellRange &range, AbstractSheet *sheet, MarkerType marker, QSharedPointer<ChartShape> shape)
 {
     Q_D(Chart);
     if (!range.isValid())
@@ -111,8 +111,7 @@ void Chart::addSeries(const CellRange &range, AbstractSheet *sheet, MarkerType m
         QSharedPointer<XlsxSeries> series = QSharedPointer<XlsxSeries>(new XlsxSeries);
         series->numberDataSource_numRef = sheetName + QLatin1String("!") + range.toString(true, true);
         series->markerType = marker;
-        series->spPr = spPr;
-        series->spPrSet = true;
+        series->shape = shape;
         d->seriesList.append(series);
     } else if (range.columnCount() < range.rowCount()) {
         //Column based series
@@ -130,8 +129,7 @@ void Chart::addSeries(const CellRange &range, AbstractSheet *sheet, MarkerType m
             series->axDataSource_numRef = axDataSouruce_numRef;
             series->numberDataSource_numRef = sheetName + QLatin1String("!") + subRange.toString(true, true);
             series->markerType = marker;
-            series->spPr = spPr;
-            series->spPrSet = true;
+            series->shape = shape;
             d->seriesList.append(series);
         }
 
@@ -151,8 +149,7 @@ void Chart::addSeries(const CellRange &range, AbstractSheet *sheet, MarkerType m
             series->axDataSource_numRef = axDataSouruce_numRef;
             series->numberDataSource_numRef = sheetName + QLatin1String("!") + subRange.toString(true, true);
             series->markerType = marker;
-            series->spPr = spPr;
-            series->spPrSet = true;
+            series->shape = shape;
             d->seriesList.append(series);
         }
     }
@@ -615,16 +612,16 @@ void ChartPrivate::saveXmlSer(QXmlStreamWriter &writer, XlsxSeries *ser, int id)
         writer.writeEndElement(); // c:marker
     }
 
-    if(ser->spPrSet)
-        saveXmlShape(writer, ser->spPr);
+    if(ser->shape)
+        saveXmlShape(writer, *ser->shape);
 
     writer.writeEndElement();//c:ser
 }
 
-void ChartPrivate::saveXmlShape(QXmlStreamWriter &writer, const ChartShape &csp) const {
+void ChartPrivate::saveXmlShape(QXmlStreamWriter &writer, const ChartShape &shape) const {
     writer.writeStartElement(QStringLiteral("c:spPr"));
-    saveXmlFill(writer, csp.area);
-    saveXmlLine(writer, csp.line);
+    saveXmlFill(writer, shape.area);
+    saveXmlLine(writer, shape.line);
     writer.writeEndElement();
 }
 
@@ -744,9 +741,21 @@ void ChartPrivate::saveXmlAxes(QXmlStreamWriter &writer) const
     }
 }
 
+ChartFill::ChartFill() :
+    style(FS_Solid)
+{
+
+}
+
 ChartFill::ChartFill(const XlsxColor &color, FillStyle style) :
     color(color),
     style(style)
+{
+
+}
+
+ChartLine::ChartLine() :
+    width(10000)
 {
 
 }

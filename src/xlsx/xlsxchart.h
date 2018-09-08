@@ -49,7 +49,8 @@ public:
         FS_Solid = 1
     };
 
-    ChartFill(const XlsxColor &color = XlsxColor(), FillStyle style = FS_Solid);
+    ChartFill();
+    ChartFill(const XlsxColor &color, FillStyle style = FS_Solid);
 
     XlsxColor color;
     FillStyle style;
@@ -57,7 +58,8 @@ public:
 
 class Q_XLSX_EXPORT ChartLine {
 public:
-    ChartLine(const ChartFill &fill = ChartFill(), int width = 10000);
+    ChartLine();
+    ChartLine(const ChartFill &fill, int width = 10000);
 
     ChartFill fill;
     int width;
@@ -143,7 +145,7 @@ public:
     ~Chart();
 
     void addSeries(const CellRange &range, AbstractSheet *sheet=0, MarkerType marker = MT_DEFAULT,
-                   const ChartShape &spPr = ChartShape());
+                   QSharedPointer<ChartShape> shape = 0);
     void setChartType(ChartType type);
     void setChartStyle(ChartStyle style);
     // use only when overriding default axis

@@ -54,8 +54,7 @@ public:
     QString numberDataSource_numRef; //yval, val
     QString axDataSource_numRef; //xval, cat
     Chart::MarkerType markerType;
-    ChartShape spPr;
-    bool spPrSet;
+    QSharedPointer<ChartShape> shape;
 };
 
 class ChartPrivate : public AbstractOOXmlFilePrivate
@@ -81,7 +80,7 @@ public:
     void saveXmlAreaChart(QXmlStreamWriter &writer) const;
     void saveXmlDoughnutChart(QXmlStreamWriter &writer) const;
     void saveXmlSer(QXmlStreamWriter &writer, XlsxSeries *ser, int id) const;
-    void saveXmlShape(QXmlStreamWriter &writer, const ChartShape &csp) const;
+    void saveXmlShape(QXmlStreamWriter &writer, const ChartShape &shape) const;
     void saveXmlFill(QXmlStreamWriter &writer, const ChartFill &fill) const;
     void saveXmlLine(QXmlStreamWriter &writer, const ChartLine &line) const;
     void saveXmlAxes(QXmlStreamWriter &writer) const;
