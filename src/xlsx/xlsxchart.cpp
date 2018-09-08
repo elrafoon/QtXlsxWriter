@@ -351,6 +351,9 @@ bool ChartPrivate::loadXmlSer(QXmlStreamReader &reader)
                         }
                     }
                 }
+            } else if (name == QLatin1String("spPr")) {
+                series->shape = QSharedPointer<ChartShape>(new ChartShape());
+                loadXmlShape(reader, *series->shape);
             }
         }
     }
@@ -358,6 +361,47 @@ bool ChartPrivate::loadXmlSer(QXmlStreamReader &reader)
     return true;
 }
 
+bool ChartPrivate::loadXmlShape(QXmlStreamReader &reader, ChartShape &shape) {
+    while (!reader.atEnd()) {
+        reader.readNextStartElement();
+        if (reader.tokenType() == QXmlStreamReader::StartElement) {
+            if (reader.name().endsWith("Fill"))
+                loadXmlFill(reader, shape.area);
+            else if(reader.name() == "ln")
+                loadXmlLine(reader, shape.line);
+        }
+    }
+
+    return true;
+}
+
+bool ChartPrivate::loadXmlLine(QXmlStreamReader &reader, ChartLine &line) {
+    if(reader.attributes().hasAttribute("w"))
+        line.width = reader.attributes().value("w").toInt();
+
+    while (!reader.atEnd()) {
+        reader.readNextStartElement();
+        if (reader.tokenType() == QXmlStreamReader::StartElement) {
+             if(reader.name().endsWith("Fill"))
+                loadXmlLine(reader, line);
+        }
+    }
+
+    return true;
+}
+
+
+bool ChartPrivate::loadXmlFill(QXmlStreamReader &reader, ChartFill &fill) {
+    while (!reader.atEnd()) {
+        reader.readNextStartElement();
+        if (reader.tokenType() == QXmlStreamReader::StartElement) {
+            if (reader.name() == "srgbClr")
+                fill.color = XlsxColor(XlsxColor::fromARGBString(reader.attributes().value("val").toString()));
+        }
+    }
+
+    return true;
+}
 
 QString ChartPrivate::loadXmlNumRef(QXmlStreamReader &reader)
 {

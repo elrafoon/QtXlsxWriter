@@ -69,6 +69,9 @@ public:
     bool loadXmlPlotArea(QXmlStreamReader &reader);
     bool loadXmlXxxChart(QXmlStreamReader &reader);
     bool loadXmlSer(QXmlStreamReader &reader);
+    bool loadXmlShape(QXmlStreamReader &reader, ChartShape &shape);
+    bool loadXmlLine(QXmlStreamReader &reader, ChartLine &line);
+    bool loadXmlFill(QXmlStreamReader &reader, ChartFill &fill);
     QString loadXmlNumRef(QXmlStreamReader &reader);
     bool loadXmlAxis(QXmlStreamReader &reader);
 
