@@ -177,6 +177,12 @@ void Chart::setChartStyle(ChartStyle style)
     d->chartStyle = style;
 }
 
+
+void Chart::addAxis(QSharedPointer<XlsxAxis> axis) {
+    Q_D(Chart);
+    d->axisList.append(axis);
+}
+
 /*!
  * \internal
  */
@@ -718,6 +724,14 @@ void ChartPrivate::saveXmlAxes(QXmlStreamWriter &writer) const
         writer.writeStartElement(QStringLiteral("c:scaling"));
         writer.writeEmptyElement(QStringLiteral("c:orientation"));
         writer.writeAttribute(QStringLiteral("val"), QStringLiteral("minMax"));
+        if(!isnan(axis->min)) {
+            writer.writeEmptyElement(QStringLiteral("c:min"));
+            writer.writeAttribute(QStringLiteral("val"), QString::number(axis->min));
+        }
+        if(!isnan(axis->max)) {
+            writer.writeEmptyElement(QStringLiteral("c:max"));
+            writer.writeAttribute(QStringLiteral("val"), QString::number(axis->max));
+        }
         writer.writeEndElement();//c:scaling
 
         writer.writeEmptyElement(QStringLiteral("c:axPos"));

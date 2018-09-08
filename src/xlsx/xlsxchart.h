@@ -26,6 +26,7 @@
 #ifndef QXLSX_CHART_H
 #define QXLSX_CHART_H
 
+#include <math.h>
 #include "xlsxabstractooxmlfile.h"
 #include "xlsxcolor_p.h"
 
@@ -70,6 +71,41 @@ public:
     LineProperties line;
 };
 
+class Q_XLSX_EXPORT XlsxAxis
+{
+public:
+    enum Type
+    {
+        T_Cat,
+        T_Val,
+        T_Date,
+        T_Ser
+    };
+
+    enum Pos
+    {
+        Left,
+        Right,
+        Top,
+        Bottom
+    };
+
+    XlsxAxis() : min(nanf("")), max(nanf("")) {}
+
+    XlsxAxis(Type t, Pos p, int id, int crossId, double min = nanf(""), double max = nanf(""))
+        :type(t), axisPos(p), axisId(id), crossAx(crossId), min(min), max(max)
+    {
+    }
+
+    Type type;
+    Pos axisPos; //l,r,b,t
+    int axisId;
+    int crossAx;
+    double min, max;
+};
+
+
+
 class Q_XLSX_EXPORT Chart : public AbstractOOXmlFile
 {
     Q_DECLARE_PRIVATE(Chart)
@@ -110,6 +146,8 @@ public:
                    const ChartShapeProperties &spPr = ChartShapeProperties());
     void setChartType(ChartType type);
     void setChartStyle(ChartStyle style);
+    // use only when overriding default axis
+    void addAxis(QSharedPointer<XlsxAxis> axis);
 
     void saveToXmlFile(QIODevice *device) const;
     bool loadFromXmlFile(QIODevice *device);

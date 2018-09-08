@@ -58,38 +58,6 @@ public:
     bool spPrSet;
 };
 
-class XlsxAxis
-{
-public:
-    enum Type
-    {
-        T_Cat,
-        T_Val,
-        T_Date,
-        T_Ser
-    };
-
-    enum Pos
-    {
-        Left,
-        Right,
-        Top,
-        Bottom
-    };
-
-    XlsxAxis(){}
-
-    XlsxAxis(Type t, Pos p, int id, int crossId)
-        :type(t), axisPos(p), axisId(id), crossAx(crossId)
-    {
-    }
-
-    Type type;
-    Pos axisPos; //l,r,b,t
-    int axisId;
-    int crossAx;
-};
-
 class ChartPrivate : public AbstractOOXmlFilePrivate
 {
     Q_DECLARE_PUBLIC(Chart)
