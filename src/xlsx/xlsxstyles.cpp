@@ -1065,7 +1065,7 @@ bool Styles::readCellXfs(QXmlStreamReader &reader)
 
                 if (xfAttrs.hasAttribute(QLatin1String("numFmtId"))) {
                     int numFmtIndex = xfAttrs.value(QLatin1String("numFmtId")).toString().toInt();
-                    bool apply = parseXsdBoolean(xfAttrs.value(QLatin1String("applyNumberFormat")).toString());
+                    bool apply = parseXsdBoolean(xfAttrs.value(QLatin1String("applyNumberFormat")).toString(), true);
                     if(apply) {
                         if (!m_customNumFmtIdMap.contains(numFmtIndex))
                             format.setNumberFormatIndex(numFmtIndex);
@@ -1079,7 +1079,7 @@ bool Styles::readCellXfs(QXmlStreamReader &reader)
                     if (fontIndex >= m_fontsList.size()) {
                         qDebug("Error read styles.xml, cellXfs fontId");
                     } else {
-                        bool apply = parseXsdBoolean(xfAttrs.value(QLatin1String("applyFont")).toString());
+                        bool apply = parseXsdBoolean(xfAttrs.value(QLatin1String("applyFont")).toString(), true);
                         if(apply) {
                             Format fontFormat = m_fontsList[fontIndex];
                             for (int i=FormatPrivate::P_Font_STARTID; i<FormatPrivate::P_Font_ENDID; ++i) {
@@ -1095,7 +1095,7 @@ bool Styles::readCellXfs(QXmlStreamReader &reader)
                     if (id >= m_fillsList.size()) {
                         qDebug("Error read styles.xml, cellXfs fillId");
                     } else {
-                        bool apply = parseXsdBoolean(xfAttrs.value(QLatin1String("applyFill")).toString());
+                        bool apply = parseXsdBoolean(xfAttrs.value(QLatin1String("applyFill")).toString(), true);
                         if(apply) {
                             Format fillFormat = m_fillsList[id];
                             for (int i=FormatPrivate::P_Fill_STARTID; i<FormatPrivate::P_Fill_ENDID; ++i) {
@@ -1111,7 +1111,7 @@ bool Styles::readCellXfs(QXmlStreamReader &reader)
                     if (id >= m_bordersList.size()) {
                         qDebug("Error read styles.xml, cellXfs borderId");
                     } else {
-                        bool apply = parseXsdBoolean(xfAttrs.value(QLatin1String("applyBorder")).toString());
+                        bool apply = parseXsdBoolean(xfAttrs.value(QLatin1String("applyBorder")).toString(), true);
                         if(apply) {
                             Format borderFormat = m_bordersList[id];
                             for (int i=FormatPrivate::P_Border_STARTID; i<FormatPrivate::P_Border_ENDID; ++i) {
@@ -1122,7 +1122,7 @@ bool Styles::readCellXfs(QXmlStreamReader &reader)
                     }
                 }
 
-                bool apply = parseXsdBoolean(xfAttrs.value(QLatin1String("applyAlignment")).toString());
+                bool apply = parseXsdBoolean(xfAttrs.value(QLatin1String("applyAlignment")).toString(), true);
                 if(apply) {
                     reader.readNextStartElement();
                     if (reader.name() == QLatin1String("alignment")) {
