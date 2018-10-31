@@ -116,17 +116,17 @@ void Chart::addSeries(const CellRange &range, AbstractSheet *sheet, MarkerType m
     } else if (range.columnCount() < range.rowCount()) {
         //Column based series
         int firstDataColumn = range.firstColumn();
-        QString axDataSouruce_numRef;
+        QString axDataSource_numRef;
         if (d->chartType == CT_Scatter || d->chartType == CT_Bubble) {
             firstDataColumn += 1;
             CellRange subRange(range.firstRow(), range.firstColumn(), range.lastRow(), range.firstColumn());
-            axDataSouruce_numRef = sheetName + QLatin1String("!") + subRange.toString(true, true);
+            axDataSource_numRef = sheetName + QLatin1String("!") + subRange.toString(true, true);
         }
 
         for (int col=firstDataColumn; col<=range.lastColumn(); ++col) {
             CellRange subRange(range.firstRow(), col, range.lastRow(), col);
             QSharedPointer<XlsxSeries> series = QSharedPointer<XlsxSeries>(new XlsxSeries);
-            series->axDataSource_numRef = axDataSouruce_numRef;
+            series->axDataSource_numRef = axDataSource_numRef;
             series->numberDataSource_numRef = sheetName + QLatin1String("!") + subRange.toString(true, true);
             series->markerType = marker;
             series->shape = shape;
