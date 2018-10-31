@@ -417,7 +417,7 @@ bool ChartPrivate::loadXmlFill(QXmlStreamReader &reader, ChartFill &fill) {
         reader.readNextStartElement();
         if(reader.tokenType() == QXmlStreamReader::StartElement) {
             if(reader.name() == "srgbClr")
-                fill.color = XlsxColor(XlsxColor::fromARGBString(reader.attributes().value("val").toString()));
+                fill.color = XlsxColor(XlsxColor::fromSRGBString(reader.attributes().value("val").toString()));
         }
     }
     return true;
