@@ -180,6 +180,22 @@ void Chart::addAxis(QSharedPointer<XlsxAxis> axis) {
     d->axisList.append(axis);
 }
 
+
+void Chart::clearAxis() {
+    Q_D(Chart);
+    d->axisList.clear();
+}
+
+unsigned Chart::axisCount() const {
+    Q_D(const Chart);
+    return d->axisList.size();
+}
+
+QSharedPointer<XlsxAxis> Chart::axis(unsigned index) const {
+    Q_D(const Chart);
+    return d->axisList[index];
+}
+
 /*!
  * \internal
  */

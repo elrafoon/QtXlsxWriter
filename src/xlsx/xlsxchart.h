@@ -156,6 +156,9 @@ public:
     void setChartStyle(ChartStyle style);
     // use only when overriding default axis
     void addAxis(QSharedPointer<XlsxAxis> axis);
+    void clearAxis();
+    unsigned axisCount() const;
+    QSharedPointer<XlsxAxis> axis(unsigned index) const;
 
     void saveToXmlFile(QIODevice *device) const;
     bool loadFromXmlFile(QIODevice *device);
