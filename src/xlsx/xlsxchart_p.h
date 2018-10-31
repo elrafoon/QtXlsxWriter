@@ -74,6 +74,7 @@ public:
     bool loadXmlFill(QXmlStreamReader &reader, ChartFill &fill);
     QString loadXmlNumRef(QXmlStreamReader &reader);
     bool loadXmlAxis(QXmlStreamReader &reader);
+    bool loadXmlAxisTitle(QXmlStreamReader &reader, XlsxAxis &axis);
 
     void saveXmlChart(QXmlStreamWriter &writer) const;
     void saveXmlPieChart(QXmlStreamWriter &writer) const;
@@ -87,6 +88,7 @@ public:
     void saveXmlFill(QXmlStreamWriter &writer, const ChartFill &fill) const;
     void saveXmlLine(QXmlStreamWriter &writer, const ChartLine &line) const;
     void saveXmlAxes(QXmlStreamWriter &writer) const;
+    void saveXmlAxisTitle(QXmlStreamReader &reader) const;
 
     Chart::ChartType chartType;
     Chart::ChartStyle chartStyle;

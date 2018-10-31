@@ -749,11 +749,27 @@ bool ChartPrivate::loadXmlAxis(QXmlStreamReader &reader)
                 axis->axisId = reader.attributes().value(QLatin1String("val")).toString().toInt();
             } else if (reader.name() == QLatin1String("crossAx")) {
                 axis->crossAx = reader.attributes().value(QLatin1String("val")).toString().toInt();
+            } else if (reader.name() == QLatin1String("title")) {
+                loadXmlAxisTitle(reader, *axis);
             }
         } else if (reader.tokenType() == QXmlStreamReader::EndElement
                    && reader.name() == name) {
             break;
         }
+    }
+
+    return true;
+}
+
+bool ChartPrivate::loadXmlAxisTitle(QXmlStreamReader &reader, XlsxAxis &axis) {
+    QStringRef startElementName = reader.name();
+
+    // TODO: Implement parsing
+
+    while(!reader.atEnd()) {
+        reader.readNext();
+        if(reader.tokenType() == QXmlStreamReader::EndElement && reader.name() == startElementName)
+            break;
     }
 
     return true;
@@ -803,6 +819,20 @@ void ChartPrivate::saveXmlAxes(QXmlStreamWriter &writer) const
 
         writer.writeEmptyElement(QStringLiteral("c:crossAx"));
         writer.writeAttribute(QStringLiteral("val"), QString::number(axis->crossAx));
+
+        if(!axis->title.isEmpty()) {
+            writer.writeStartElement("c:title");
+              writer.writeStartElement("c:tx");
+                writer.writeStartElement("c:rich");
+                  writer.writeStartElement("a:p");
+                    writer.writeStartElement("a:r");
+                      writer.writeTextElement("a:t", axis->title);
+                    writer.writeEndElement();
+                  writer.writeEndElement();
+                writer.writeEndElement();
+              writer.writeEndElement();
+            writer.writeEndElement();
+        }
 
         writer.writeEndElement();//name
     }

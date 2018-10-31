@@ -100,8 +100,8 @@ public:
 
     XlsxAxis() : min(nanf("")), max(nanf("")) {}
 
-    XlsxAxis(Type t, Pos p, int id, int crossId, double min = nanf(""), double max = nanf(""))
-        :type(t), axisPos(p), axisId(id), crossAx(crossId), min(min), max(max)
+    XlsxAxis(Type t, Pos p, int id, int crossId, QString title = "", double min = nanf(""), double max = nanf(""))
+        :type(t), axisPos(p), axisId(id), crossAx(crossId), title(title), min(min), max(max)
     {
     }
 
@@ -109,6 +109,7 @@ public:
     Pos axisPos; //l,r,b,t
     int axisId;
     int crossAx;
+    QString title;
     double min, max;
 };
 
