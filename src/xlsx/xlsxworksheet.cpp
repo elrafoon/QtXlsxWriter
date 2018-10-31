@@ -64,6 +64,10 @@ WorksheetPrivate::WorksheetPrivate(Worksheet *p, Worksheet::CreateFlag flag)
   , windowProtection(false), showFormulas(false), showGridLines(true), showRowColHeaders(true)
   , showZeros(true), rightToLeft(false), tabSelected(false), showRuler(false)
   , showOutlineSymbols(true), showWhiteSpace(true), urlPattern(QStringLiteral("^([fh]tt?ps?://)|(mailto:)|(file://)"))
+  , paperSize(9), firstPageNumber(0), fitToWidth(1), fitToHeight(1), copies(1)
+  , scale(100), horizontalDpi(300), verticalDpi(300)
+  , pageOrder("downThenOver"), orientation("portrait"), cellComments("none")
+  , blackAndWhite(false), draft(false), useFirstPageNumber(false)
 {
     previous_row = 0;
 
@@ -1230,6 +1234,7 @@ void Worksheet::saveToXmlFile(QIODevice *device) const
     writer.writeEndElement();//sheetData
 
     d->saveXmlMergeCells(writer);
+    d->saveXmlPageSetup(writer);
     foreach (const ConditionalFormatting cf, d->conditionalFormattingList)
         cf.saveToXml(writer);
     d->saveXmlDataValidations(writer);
@@ -1396,6 +1401,25 @@ void WorksheetPrivate::saveXmlDataValidations(QXmlStreamWriter &writer) const
         validation.saveToXml(writer);
 
     writer.writeEndElement(); //dataValidations
+}
+
+void WorksheetPrivate::saveXmlPageSetup(QXmlStreamWriter &writer) const {
+    writer.writeStartElement("pageSetup");
+    writer.writeAttribute("paperSize", QString::number(paperSize));
+    writer.writeAttribute("firstPageNumber", QString::number(firstPageNumber));
+    writer.writeAttribute("fitToWidth", QString::number(fitToWidth));
+    writer.writeAttribute("fitToHeight", QString::number(fitToHeight));
+    writer.writeAttribute("copies", QString::number(copies));
+    writer.writeAttribute("scale", QString::number(scale));
+    writer.writeAttribute("horizontalDpi", QString::number(horizontalDpi));
+    writer.writeAttribute("verticalDpi", QString::number(verticalDpi));
+    writer.writeAttribute("pageOrder", pageOrder);
+    writer.writeAttribute("orientation", orientation);
+    writer.writeAttribute("cellComments", cellComments);
+    writer.writeAttribute("blackAndWhite", blackAndWhite ? "true" : "false");
+    writer.writeAttribute("draft", draft ? "true" : "false");
+    writer.writeAttribute("useFirstPageNumber", useFirstPageNumber ? "true" : "false");
+    writer.writeEndElement();
 }
 
 void WorksheetPrivate::saveXmlHyperlinks(QXmlStreamWriter &writer) const
@@ -2206,6 +2230,25 @@ void WorksheetPrivate::loadXmlHyperlinks(QXmlStreamReader &reader)
     }
 }
 
+void WorksheetPrivate::loadXmlPageSetup(QXmlStreamReader &reader) {
+    Q_ASSERT(reader.name() == QLatin1String("pageSetup"));
+    QXmlStreamAttributes attrs = reader.attributes();
+    paperSize = attrs.hasAttribute("paperSize") ? attrs.value("paperSize").toInt() : 9;
+    scale = attrs.hasAttribute("scale") ? attrs.value("scale").toInt() : 100;
+    firstPageNumber = attrs.hasAttribute("firstPageNumber") ? attrs.value("firstPageNumber").toInt() : 0;
+    fitToWidth = attrs.hasAttribute("fitToWidth") ? attrs.value("fitToWidth").toInt() : 1;
+    fitToHeight = attrs.hasAttribute("fitToHeight") ? attrs.value("fitToHeight").toInt() : 1;
+    pageOrder = attrs.hasAttribute("pageOrder") ? attrs.value("pageOrder").toString() : "downThenOver";
+    orientation = attrs.hasAttribute("orientation") ? attrs.value("orientation").toString() : "portrait";
+    blackAndWhite = attrs.hasAttribute("blackAndWhite") ? (attrs.value("blackAndWhite") == "true") : false;
+    draft = attrs.hasAttribute("draft") ? (attrs.value("draft") == "true") : false;
+    cellComments = attrs.hasAttribute("cellComments") ? attrs.value("cellComments").toString() : "none";
+    useFirstPageNumber = attrs.hasAttribute("useFirstPageNumber") ? (attrs.value("useFirstPageNumber") == "true") : false;
+    horizontalDpi = attrs.hasAttribute("horizontalDpi") ? attrs.value("horizontalDpi").toInt() : 300;
+    verticalDpi = attrs.hasAttribute("verticalDpi") ? attrs.value("verticalDpi").toInt() : 300;
+    copies = attrs.hasAttribute("copies") ? attrs.value("copies").toInt() : 1;
+}
+
 QList <QSharedPointer<XlsxColumnInfo> > WorksheetPrivate::getColumnInfoList(int colFirst, int colLast)
 {
     QList <QSharedPointer<XlsxColumnInfo> > columnsInfoList;
@@ -2274,6 +2317,8 @@ bool Worksheet::loadFromXmlFile(QIODevice *device)
                 d->loadXmlSheetData(reader);
             } else if (reader.name() == QLatin1String("mergeCells")) {
                 d->loadXmlMergeCells(reader);
+            } else if (reader.name() == QLatin1String("pageSetup")) {
+                d->loadXmlPageSetup(reader);
             } else if (reader.name() == QLatin1String("dataValidations")) {
                 d->loadXmlDataValidations(reader);
             } else if (reader.name() == QLatin1String("conditionalFormatting")) {

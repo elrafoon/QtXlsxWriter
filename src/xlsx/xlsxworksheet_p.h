@@ -168,6 +168,7 @@ public:
     void saveXmlHyperlinks(QXmlStreamWriter &writer) const;
     void saveXmlDrawings(QXmlStreamWriter &writer) const;
     void saveXmlDataValidations(QXmlStreamWriter &writer) const;
+    void saveXmlPageSetup(QXmlStreamWriter &writer) const;
     int rowPixelsSize(int row) const;
     int colPixelsSize(int col) const;
 
@@ -178,6 +179,7 @@ public:
     void loadXmlSheetFormatProps(QXmlStreamReader &reader);
     void loadXmlSheetViews(QXmlStreamReader &reader);
     void loadXmlHyperlinks(QXmlStreamReader &reader);
+    void loadXmlPageSetup(QXmlStreamReader &reader);
 
     QList<QSharedPointer<XlsxRowInfo> > getRowInfoList(int rowFirst, int rowLast);
     QList <QSharedPointer<XlsxColumnInfo> > getColumnInfoList(int colFirst, int colLast);
@@ -223,6 +225,10 @@ public:
     bool showRuler;
     bool showOutlineSymbols;
     bool showWhiteSpace;
+
+    int paperSize, firstPageNumber, fitToWidth, fitToHeight, copies, scale, horizontalDpi, verticalDpi;
+    QString pageOrder, orientation, cellComments;
+    bool blackAndWhite, draft, useFirstPageNumber;
 
     QRegularExpression urlPattern;
 private:
