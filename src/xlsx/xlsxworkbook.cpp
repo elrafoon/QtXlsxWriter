@@ -542,6 +542,8 @@ void Workbook::saveToXmlFile(QIODevice *device) const
 
     writer.writeStartElement(QStringLiteral("calcPr"));
     writer.writeAttribute(QStringLiteral("calcId"), QStringLiteral("124519"));
+    writer.writeAttribute(QStringLiteral("fullCalcOnLoad"), QStringLiteral("1"));
+    writer.writeAttribute(QStringLiteral("calcMode"), QStringLiteral("auto"));
     writer.writeEndElement(); //calcPr
 
     writer.writeEndElement();//workbook
