@@ -362,7 +362,8 @@ bool ChartPrivate::loadXmlSer(QXmlStreamReader &reader)
 }
 
 bool ChartPrivate::loadXmlShape(QXmlStreamReader &reader, ChartShape &shape) {
-    while (!reader.atEnd()) {
+    QStringRef tag = reader.name();
+    while (!reader.atEnd() && !(reader.tokenType() == QXmlStreamReader::EndElement && reader.name() == tag)) {
         reader.readNextStartElement();
         if (reader.tokenType() == QXmlStreamReader::StartElement) {
             if (reader.name().endsWith("Fill"))
@@ -376,10 +377,12 @@ bool ChartPrivate::loadXmlShape(QXmlStreamReader &reader, ChartShape &shape) {
 }
 
 bool ChartPrivate::loadXmlLine(QXmlStreamReader &reader, ChartLine &line) {
+    QStringRef tag = reader.name();
+
     if(reader.attributes().hasAttribute("w"))
         line.width = reader.attributes().value("w").toInt();
 
-    while (!reader.atEnd()) {
+    while (!reader.atEnd() && !(reader.tokenType() == QXmlStreamReader::EndElement && reader.name() == tag)) {
         reader.readNextStartElement();
         if (reader.tokenType() == QXmlStreamReader::StartElement) {
              if(reader.name().endsWith("Fill"))
@@ -392,14 +395,15 @@ bool ChartPrivate::loadXmlLine(QXmlStreamReader &reader, ChartLine &line) {
 
 
 bool ChartPrivate::loadXmlFill(QXmlStreamReader &reader, ChartFill &fill) {
-    while (!reader.atEnd()) {
+    QStringRef tag = reader.name();
+
+    while (!reader.atEnd() && !(reader.tokenType() == QXmlStreamReader::EndElement && reader.name() == tag)) {
         reader.readNextStartElement();
-        if (reader.tokenType() == QXmlStreamReader::StartElement) {
-            if (reader.name() == "srgbClr")
+        if(reader.tokenType() == QXmlStreamReader::StartElement) {
+            if(reader.name() == "srgbClr")
                 fill.color = XlsxColor(XlsxColor::fromARGBString(reader.attributes().value("val").toString()));
         }
     }
-
     return true;
 }
 
