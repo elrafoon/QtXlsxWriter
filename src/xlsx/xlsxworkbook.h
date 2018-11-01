@@ -49,6 +49,24 @@ class Chartsheet;
 class Worksheet;
 
 class WorkbookPrivate;
+
+struct XlsxDefineNameData
+{
+    XlsxDefineNameData()
+        :sheetId(-1)
+    {}
+    XlsxDefineNameData(const QString &name, const QString &formula, const QString &comment, int sheetId=-1)
+        :name(name), formula(formula), comment(comment), sheetId(sheetId)
+    {
+
+    }
+    QString name;
+    QString formula;
+    QString comment;
+    //using internal sheetId, instead of the localSheetId(order in the workbook)
+    int sheetId;
+};
+
 class Q_XLSX_EXPORT Workbook : public AbstractOOXmlFile
 {
     Q_DECLARE_PRIVATE(Workbook)
@@ -70,6 +88,7 @@ public:
 
 //    void addChart();
     bool defineName(const QString &name, const QString &formula, const QString &comment=QString(), const QString &scope=QString());
+    const QList<XlsxDefineNameData> &definedNamesList() const;
     bool isDate1904() const;
     void setDate1904(bool date1904);
     bool isStringsToNumbersEnabled() const;

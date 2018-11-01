@@ -186,6 +186,12 @@ bool Workbook::defineName(const QString &name, const QString &formula, const QSt
     return true;
 }
 
+const QList<XlsxDefineNameData> &Workbook::definedNamesList() const {
+    Q_D(const Workbook);
+
+    return d->definedNamesList;
+}
+
 AbstractSheet *Workbook::addSheet(const QString &name, AbstractSheet::SheetType type)
 {
     Q_D(Workbook);
