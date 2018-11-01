@@ -153,6 +153,8 @@ public:
 
     void addSeries(const CellRange &range, AbstractSheet *sheet=0, MarkerType marker = MT_DEFAULT,
                    QSharedPointer<ChartShape> shape = 0);
+    void addXYSeries(const CellRange &x, const CellRange &y, AbstractSheet *sheet=0, MarkerType marker = MT_DEFAULT,
+                   QSharedPointer<ChartShape> shape = 0);
     void setChartType(ChartType type);
     void setChartStyle(ChartStyle style);
     // use only when overriding default axis

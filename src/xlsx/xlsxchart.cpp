@@ -155,6 +155,27 @@ void Chart::addSeries(const CellRange &range, AbstractSheet *sheet, MarkerType m
     }
 }
 
+void Chart::addXYSeries(const CellRange &x, const CellRange &y, AbstractSheet *sheet, MarkerType marker, QSharedPointer<ChartShape> shape) {
+    Q_D(Chart);
+    if (!x.isValid() || !y.isValid())
+        return;
+    if (sheet && sheet->sheetType() != AbstractSheet::ST_WorkSheet)
+        return;
+    if (!sheet && d->sheet->sheetType() != AbstractSheet::ST_WorkSheet)
+        return;
+
+    QString sheetName = sheet ? sheet->sheetName() : d->sheet->sheetName();
+    //In case sheetName contains space or '
+    sheetName = escapeSheetName(sheetName);
+
+    QSharedPointer<XlsxSeries> series = QSharedPointer<XlsxSeries>(new XlsxSeries);
+    series->axDataSource_numRef = sheetName + QLatin1String("!") + x.toString(true, true);
+    series->numberDataSource_numRef = sheetName + QLatin1String("!") + y.toString(true, true);
+    series->markerType = marker;
+    series->shape = shape;
+    d->seriesList.append(series);
+}
+
 /*!
  * Set the type of the chart to \a type
  */
