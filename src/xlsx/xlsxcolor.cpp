@@ -136,6 +136,12 @@ QColor XlsxColor::fromSRGBString(const QString &ci)
     return QColor(c.mid(0, 2).toInt(0, 16), c.mid(2, 2).toInt(0, 16), c.mid(4, 2).toInt(0, 16));
 }
 
+QColor XlsxColor::fromHTMLString(const QString &ci) {
+    Q_ASSERT(ci.length() >= 2 && ci[0] == '#');
+    QString c = ci.mid(1).rightJustified(6, '0');
+    return fromSRGBString(c);
+}
+
 QString XlsxColor::toARGBString(const QColor &c)
 {
     QString color;
