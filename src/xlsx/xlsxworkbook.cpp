@@ -42,6 +42,18 @@
 
 QT_BEGIN_NAMESPACE_XLSX
 
+CellRange XlsxDefineNameData::toRangeOnSheet(AbstractSheet *sheet) const {
+    QStringList parts = formula.split('!');
+    if(parts.size() == 1)
+        return CellRange(formula);
+    else if(parts.size() == 2) {
+        if(parts[0] == sheet->sheetName())
+            return CellRange(parts[1]);
+        else
+            return CellRange();
+    }
+}
+
 WorkbookPrivate::WorkbookPrivate(Workbook *q, Workbook::CreateFlag flag) :
     AbstractOOXmlFilePrivate(q, flag)
 {
@@ -190,6 +202,17 @@ const QList<XlsxDefineNameData> &Workbook::definedNamesList() const {
     Q_D(const Workbook);
 
     return d->definedNamesList;
+}
+
+const XlsxDefineNameData *Workbook::findDefinedName(const QString &name) const {
+    Q_D(const Workbook);
+
+    for(const XlsxDefineNameData &nd : d->definedNamesList) {
+        if(nd.name == name)
+            return &nd;
+    }
+
+    return nullptr;
 }
 
 AbstractSheet *Workbook::addSheet(const QString &name, AbstractSheet::SheetType type)

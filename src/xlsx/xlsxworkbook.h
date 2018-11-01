@@ -28,6 +28,7 @@
 #include "xlsxglobal.h"
 #include "xlsxabstractooxmlfile.h"
 #include "xlsxabstractsheet.h"
+#include "xlsxcellrange.h"
 #include <QList>
 #include <QImage>
 #include <QSharedPointer>
@@ -60,9 +61,13 @@ struct XlsxDefineNameData
     {
 
     }
+
+    CellRange toRangeOnSheet(AbstractSheet *sheet) const;
+
     QString name;
     QString formula;
     QString comment;
+
     //using internal sheetId, instead of the localSheetId(order in the workbook)
     int sheetId;
 };
@@ -89,6 +94,7 @@ public:
 //    void addChart();
     bool defineName(const QString &name, const QString &formula, const QString &comment=QString(), const QString &scope=QString());
     const QList<XlsxDefineNameData> &definedNamesList() const;
+    const XlsxDefineNameData *findDefinedName(const QString &name) const;
     bool isDate1904() const;
     void setDate1904(bool date1904);
     bool isStringsToNumbersEnabled() const;
