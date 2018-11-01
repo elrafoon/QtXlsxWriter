@@ -132,7 +132,7 @@ QColor XlsxColor::fromARGBString(const QString &c)
 QColor XlsxColor::fromSRGBString(const QString &ci)
 {
     Q_ASSERT(ci.length() <= 6);
-    QString c = ci.rightJustified(8, '0');
+    QString c = ci.rightJustified(6, '0');
     return QColor(c.mid(0, 2).toInt(0, 16), c.mid(2, 2).toInt(0, 16), c.mid(4, 2).toInt(0, 16));
 }
 
