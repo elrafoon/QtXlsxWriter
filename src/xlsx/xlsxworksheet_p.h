@@ -230,6 +230,8 @@ public:
     QString pageOrder, orientation, cellComments;
     bool blackAndWhite, draft, useFirstPageNumber;
 
+    QString codeName;
+
     QRegularExpression urlPattern;
 private:
     static double calculateColWidth(int characters);

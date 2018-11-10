@@ -1158,6 +1158,11 @@ void Worksheet::saveToXmlFile(QIODevice *device) const
     //    writer.writeAttribute("xmlns:x14ac", "http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac");
     //    writer.writeAttribute("mc:Ignorable", "x14ac");
 
+    writer.writeStartElement(QStringLiteral("sheetPr"));
+    if(!d->codeName.isNull() && !d->codeName.isEmpty())
+        writer.writeAttribute(QStringLiteral("codeName"), d->codeName);
+    writer.writeEndElement();
+
     writer.writeStartElement(QStringLiteral("dimension"));
     writer.writeAttribute(QStringLiteral("ref"), d->generateDimensionString());
     writer.writeEndElement();//dimension
@@ -2307,6 +2312,11 @@ bool Worksheet::loadFromXmlFile(QIODevice *device)
                 QXmlStreamAttributes attributes = reader.attributes();
                 QString range = attributes.value(QLatin1String("ref")).toString();
                 d->dimension = CellRange(range);
+            } else if (reader.name() == QLatin1String("sheetPr")) {
+                d->codeName = reader.attributes().hasAttribute("codeName") ? reader.attributes().value("codeName").toString() : "";
+
+                while (!reader.atEnd() && !(reader.name() == QLatin1String("sheetPr") && reader.tokenType() == QXmlStreamReader::EndElement))
+                    reader.readNextStartElement();
             } else if (reader.name() == QLatin1String("sheetViews")) {
                 d->loadXmlSheetViews(reader);
             } else if (reader.name() == QLatin1String("sheetFormatPr")) {
